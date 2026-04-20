@@ -13,7 +13,8 @@ const COLLECTIONS = {
 // 兼容：水浒传扁平目录（如果你以前按 image/108 放过，也能显示）
 const IMAGE_DIR_SHUIHU_FLAT = 'image/108';
 const IMAGE_EXTS = ['jpg', 'png', 'webp'];
-const MAX_VARIANTS_PER_HERO = 12;
+const MAX_VARIANTS_PER_HERO = 20;
+const IMAGE_DIR_CACHE = new Map();
 
 /**
  * 数据说明
@@ -161,18 +162,52 @@ function itemBaseName(collectionKey, item) {
 function itemVariantCandidates(collectionKey, item, variantIndex) {
   const collection = COLLECTIONS[collectionKey] || COLLECTIONS.shuihu;
   const base = itemBaseName(collectionKey, item);
-  const suffix = variantIndex ? `-${variantIndex}` : '';
-  const filename = `${base}${suffix}`;
+  const candidates = [];
 
-  const inFolder = IMAGE_EXTS.map(ext => `${collection.root}/${item.name}/${filename}.${ext}`);
-
-  // 水浒传兼容：扁平目录（image/108）
-  if (collectionKey === 'shuihu') {
-    const flat = IMAGE_EXTS.map(ext => `${IMAGE_DIR_SHUIHU_FLAT}/${filename}.${ext}`);
-    return [...inFolder, ...flat];
+  if (variantIndex === 0) {
+    candidates.push(`${collection.root}/${item.name}/${base}.jpg`);
+    candidates.push(`${collection.root}/${item.name}/${base}.png`);
+    candidates.push(`${collection.root}/${item.name}/${base}.webp`);
+    if (collectionKey === 'shuihu') {
+      candidates.push(`${IMAGE_DIR_SHUIHU_FLAT}/${base}.jpg`);
+    }
+    return candidates;
   }
 
-  return inFolder;
+  const suffix = `-${variantIndex}`;
+  candidates.push(`${collection.root}/${item.name}/${base}${suffix}.jpg`);
+  candidates.push(`${collection.root}/${item.name}/${base}${suffix}.png`);
+  candidates.push(`${collection.root}/${item.name}/${base}${suffix}.webp`);
+
+  if (collectionKey === 'shuihu') {
+    candidates.push(`${IMAGE_DIR_SHUIHU_FLAT}/${base}${suffix}.jpg`);
+  }
+
+  return candidates;
+}
+
+function getItemAllUrls(collectionKey, item) {
+  const collection = COLLECTIONS[collectionKey] || COLLECTIONS.shuihu;
+  const base = itemBaseName(collectionKey, item);
+  const urls = [];
+
+  if (collectionKey === 'shuihu') {
+    for (let i = 1; i <= 20; i++) {
+      urls.push(`${collection.root}/${item.name}/${base}-${i}.jpg`);
+    }
+    for (let i = 1; i <= 20; i++) {
+      urls.push(`${collection.root}/${item.name}/${base}-${i}-wukong.jpg`);
+      urls.push(`${collection.root}/${item.name}/${base}-${i}-doubao.jpg`);
+      urls.push(`${collection.root}/${item.name}/${base}-${i}-gmini.jpg`);
+      urls.push(`${collection.root}/${item.name}/${base}-${i}-gmin.jpg`);
+    }
+    urls.push(`${collection.root}/${item.name}/${base}.jpg`);
+  } else {
+    urls.push(`${collection.root}/${item.name}/${item.name}.jpg`);
+    urls.push(`${collection.root}/${item.name}/${item.name}.png`);
+  }
+
+  return urls;
 }
 
 function setImageWithFallback(imgEl, candidates) {
@@ -210,14 +245,45 @@ function probeFirstExisting(candidates) {
   });
 }
 
+async function scanFolderForImages(collectionKey, item) {
+  const collection = COLLECTIONS[collectionKey] || COLLECTIONS.shuihu;
+  const baseDir = `${collection.root}/${item.name}`;
+  
+  const cacheKey = baseDir;
+  if (IMAGE_DIR_CACHE.has(cacheKey)) {
+    return IMAGE_DIR_CACHE.get(cacheKey);
+  }
+  
+  const prefix = itemBaseName(collectionKey, item);
+  const urls = [];
+  
+  try {
+    const resp = await fetch(baseDir + '/');
+    if (!resp.ok) throw new Error('Cannot fetch');
+    const html = await resp.text();
+    
+    const imgMatches = html.match(/href="([^"]+\.(?:jpg|png|webp))"/gi) || [];
+    for (const match of imgMatches) {
+      const filename = match.replace(/href="([^"]+)".*/i, '$1').split('/').pop();
+      if (filename.startsWith(prefix) || filename.startsWith(item.name)) {
+        urls.push(`${baseDir}/${filename}`);
+      }
+    }
+  } catch (e) {
+    // 静默失败，使用传统方式
+  }
+  
+  IMAGE_DIR_CACHE.set(cacheKey, urls);
+  return urls;
+}
+
 async function getItemGalleryUrls(collectionKey, item) {
+  const candidates = getItemAllUrls(collectionKey, item);
   const urls = [];
 
-  for (let i = 1; i <= MAX_VARIANTS_PER_HERO; i += 1) {
-    // eslint-disable-next-line no-await-in-loop
-    const found = await probeFirstExisting(itemVariantCandidates(collectionKey, item, i));
-    if (!found) break;
-    urls.push(found);
+  for (const url of candidates) {
+    const found = await probeFirstExisting([url]);
+    if (found) urls.push(found);
   }
 
   if (urls.length > 0) return urls;
@@ -261,9 +327,7 @@ function createViewer() {
         <button id="viewer-next" class="nav-btn" type="button" aria-label="下一张">›</button>
       </div>
       <div class="viewer-thumbs" id="viewer-thumbs" aria-label="缩略图"></div>
-      <div class="viewer-actions">
-        <a id="viewer-download" class="control-btn" href="#" download>下载原图</a>
-      </div>
+      
     </div>
   `;
 
@@ -383,24 +447,21 @@ function render(state) {
   gallery.innerHTML = '';
 
   if (list.length === 0) {
-    gallery.innerHTML = '<p class="hint">没有匹配结果，换个关键词试试（例如：武松 / 行者）。</p>';
+    gallery.innerHTML = `<p class="hint">未找到 "${state.query}" 相关结果，请尝试其他关键词</p>`;
     return;
   }
 
-  list.forEach(item => {
+  list.forEach((item, idx) => {
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'hero-card';
     card.title = `${item.name}${item.nickname ? `（${item.nickname}）` : ''}`;
+    card.setAttribute('data-idx', idx);
 
     const img = document.createElement('img');
     img.loading = 'lazy';
     img.alt = `${item.name}${item.nickname ? `（${item.nickname}）` : ''}`;
-    // 卡片优先显示 -1，其次单图
-    setImageWithFallback(img, [
-      ...itemVariantCandidates(state.collectionKey, item, 1),
-      ...itemVariantCandidates(state.collectionKey, item, 0)
-    ]);
+    setImageWithFallback(img, getItemAllUrls(state.collectionKey, item));
 
     const meta = document.createElement('div');
     meta.className = 'hero-meta';
@@ -457,3 +518,81 @@ clearSearchBtn.addEventListener('click', () => {
   render(state);
   searchInput.focus();
 });
+
+// Keyboard navigation
+let focusedIndex = -1;
+
+function updateFocus(newIdx, list) {
+  if (list.length === 0) return;
+  const cards = gallery.querySelectorAll('.hero-card');
+  if (focusedIndex >= 0 && focusedIndex < cards.length) {
+    cards[focusedIndex].classList.remove('focused');
+  }
+  focusedIndex = Math.max(-1, Math.min(newIdx, list.length - 1));
+  if (focusedIndex >= 0 && focusedIndex < cards.length) {
+    cards[focusedIndex].classList.add('focused');
+    cards[focusedIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+function openFocused() {
+  const cards = gallery.querySelectorAll('.hero-card');
+  if (focusedIndex >= 0 && focusedIndex < cards.length) {
+    cards[focusedIndex].click();
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  const viewer = document.getElementById('image-viewer');
+  if (viewer && viewer.style.display === 'flex') return;
+  if (e.target === searchInput) return;
+
+  const items = state.collectionKey === 'xiyou' ? XIYOU : SHUIHU;
+  const q = normalizeText(state.query);
+  const list = items.filter(h => matchesQuery(h, q));
+  const cols = Math.ceil(gallery.clientWidth / 224);
+
+  switch (e.key) {
+    case 'j':
+    case 'ArrowDown':
+      e.preventDefault();
+      updateFocus(focusedIndex + cols, list);
+      break;
+    case 'k':
+    case 'ArrowUp':
+      e.preventDefault();
+      updateFocus(focusedIndex - cols, list);
+      break;
+    case 'h':
+    case 'ArrowLeft':
+      e.preventDefault();
+      updateFocus(focusedIndex - 1, list);
+      break;
+    case 'l':
+    case 'ArrowRight':
+      e.preventDefault();
+      updateFocus(focusedIndex + 1, list);
+      break;
+    case 'Enter':
+      if (focusedIndex >= 0) openFocused();
+      break;
+    case 'Home':
+      e.preventDefault();
+      updateFocus(0, list);
+      break;
+    case 'End':
+      e.preventDefault();
+      updateFocus(list.length - 1, list);
+      break;
+  }
+});
+
+// Add focus style
+const style = document.createElement('style');
+style.textContent = `
+  .hero-card.focused {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+`;
+document.head.appendChild(style);
