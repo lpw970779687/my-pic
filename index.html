@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="水浒传一百零八将静态图片展示页">
+    <meta name="description" content="水浒传/西游记静态图片展示页">
 
-    <title>水浒传 · 一百零八好汉图鉴</title>
+    <title>名著人物图鉴 · 水浒传 / 西游记</title>
 
     <link rel="stylesheet" href="css/style.css" type="text/css">
     <link rel="icon" href="image/placeholder.svg">
@@ -16,19 +16,18 @@
 <body>
     <header>
         <div class="site-title">
-            <div class="site-title__main">水浒传 · 一百零八好汉图鉴</div>
-            <div class="site-title__sub">静态展示 · 搜索/筛选 · 点击卡片查看大图</div>
+            <div class="site-title__main">名著人物图鉴</div>
+            <div class="site-title__sub">水浒传 / 西游记 · 静态展示 · 点击卡片查看大图</div>
         </div>
 
         <div class="toolbar">
-            <div class="toolbar__filters" role="tablist" aria-label="筛选">
-                <button class="filter-btn" data-filter="all">全部 108</button>
-                <button class="filter-btn" data-filter="tiangang">天罡 36</button>
-                <button class="filter-btn" data-filter="disha">地煞 72</button>
+            <div class="toolbar__filters" role="tablist" aria-label="作品选择">
+                <button class="filter-btn" data-filter="shuihu">水浒传</button>
+                <button class="filter-btn" data-filter="xiyou">西游记</button>
             </div>
 
             <div class="toolbar__search">
-                <input id="search" type="search" placeholder="搜索：姓名 / 绰号（例如：宋江、及时雨）" autocomplete="off" />
+                <input id="search" type="search" placeholder="搜索：姓名 / 绰号（例如：宋江、孙悟空）" autocomplete="off" />
                 <button id="clear-search" type="button" class="ghost-btn">清空</button>
             </div>
         </div>
@@ -43,9 +42,9 @@
     <footer>
         <div class="footer-inner">
             <div class="footer-note">
-                图片路径约定（两种都支持）：<code>image/水浒传/宋江/001-宋江-1.jpg</code>（推荐，按人物建文件夹）或 <code>image/108/001-宋江-1.jpg</code>（扁平目录）。
+                图片路径约定：按 <code>image</code> 下作品目录区分，例如 <code>image/水浒传/宋江/001-宋江-1.jpg</code>、<code>image/西游记/孙悟空/孙悟空-1.jpg</code>。
             </div>
-            <div class="footer-copy">© 2026 水浒传 · 108好汉静态展示页</div>
+            <div class="footer-copy">© 2026 名著人物图鉴（静态页）</div>
         </div>
     </footer>
 </body>
