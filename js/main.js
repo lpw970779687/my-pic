@@ -4,7 +4,14 @@ const clearSearchBtn = document.getElementById('clear-search');
 const filterButtons = document.querySelectorAll('.filter-btn');
 
 const PLACEHOLDER_SRC = 'image/placeholder.svg';
-const IMAGE_DIR = 'image/108';
+// 作品根目录（按 image 下的目录区分）
+const COLLECTIONS = {
+  shuihu: { key: 'shuihu', label: '水浒传', root: 'image/水浒传' },
+  xiyou: { key: 'xiyou', label: '西游记', root: 'image/西游记' }
+};
+
+// 兼容：水浒传扁平目录（如果你以前按 image/108 放过，也能显示）
+const IMAGE_DIR_SHUIHU_FLAT = 'image/108';
 const IMAGE_EXTS = ['jpg', 'png', 'webp'];
 const MAX_VARIANTS_PER_HERO = 12;
 
@@ -14,7 +21,7 @@ const MAX_VARIANTS_PER_HERO = 12;
  * - group: 'tiangang' | 'disha'
  * - filename: 默认按 001-宋江.jpg 规则拼接（你把图放进去就会自动显示）
  */
-const HEROES = [
+const SHUIHU = [
   // 天罡 36
   { rank: 1, group: 'tiangang', name: '宋江', nickname: '呼保义 / 及时雨' },
   { rank: 2, group: 'tiangang', name: '卢俊义', nickname: '玉麒麟' },
@@ -128,23 +135,44 @@ const HEROES = [
   { rank: 108, group: 'disha', name: '段景住', nickname: '金毛犬' }
 ];
 
+// 西游记（按需补充/修改人物列表）
+const XIYOU = [
+  { name: '孙悟空', nickname: '齐天大圣' },
+  { name: '唐僧', nickname: '玄奘' },
+  { name: '猪八戒', nickname: '天蓬元帅' },
+  { name: '沙僧', nickname: '卷帘大将' },
+  { name: '白龙马', nickname: '西海龙王三太子' },
+  { name: '观音菩萨', nickname: '' },
+  { name: '如来佛祖', nickname: '' },
+  { name: '玉皇大帝', nickname: '' },
+  { name: '太上老君', nickname: '' },
+  { name: '二郎神', nickname: '杨戬' }
+];
+
 function pad3(n) {
   return String(n).padStart(3, '0');
 }
 
-function heroBaseName(hero) {
-  return `${pad3(hero.rank)}-${hero.name}`;
+function itemBaseName(collectionKey, item) {
+  if (collectionKey === 'shuihu') return `${pad3(item.rank)}-${item.name}`;
+  return item.name;
 }
 
-function heroImageCandidates(hero) {
-  const base = heroBaseName(hero);
-  return IMAGE_EXTS.map(ext => `${IMAGE_DIR}/${base}.${ext}`);
-}
-
-function heroVariantCandidates(hero, variantIndex) {
-  const base = heroBaseName(hero);
+function itemVariantCandidates(collectionKey, item, variantIndex) {
+  const collection = COLLECTIONS[collectionKey] || COLLECTIONS.shuihu;
+  const base = itemBaseName(collectionKey, item);
   const suffix = variantIndex ? `-${variantIndex}` : '';
-  return IMAGE_EXTS.map(ext => `${IMAGE_DIR}/${base}${suffix}.${ext}`);
+  const filename = `${base}${suffix}`;
+
+  const inFolder = IMAGE_EXTS.map(ext => `${collection.root}/${item.name}/${filename}.${ext}`);
+
+  // 水浒传兼容：扁平目录（image/108）
+  if (collectionKey === 'shuihu') {
+    const flat = IMAGE_EXTS.map(ext => `${IMAGE_DIR_SHUIHU_FLAT}/${filename}.${ext}`);
+    return [...inFolder, ...flat];
+  }
+
+  return inFolder;
 }
 
 function setImageWithFallback(imgEl, candidates) {
@@ -152,13 +180,13 @@ function setImageWithFallback(imgEl, candidates) {
   imgEl.onerror = () => {
     i += 1;
     if (i < candidates.length) {
-      imgEl.src = candidates[i];
+      imgEl.src = encodeURI(candidates[i]);
       return;
     }
     imgEl.onerror = null;
     imgEl.src = PLACEHOLDER_SRC;
   };
-  imgEl.src = candidates[i];
+  imgEl.src = encodeURI(candidates[i]);
 }
 
 function probeFirstExisting(candidates) {
@@ -170,7 +198,7 @@ function probeFirstExisting(candidates) {
         resolve(null);
         return;
       }
-      const url = candidates[i];
+      const url = encodeURI(candidates[i]);
       test.onload = () => resolve(url);
       test.onerror = () => {
         i += 1;
@@ -182,19 +210,19 @@ function probeFirstExisting(candidates) {
   });
 }
 
-async function getHeroGalleryUrls(hero) {
+async function getItemGalleryUrls(collectionKey, item) {
   const urls = [];
 
   for (let i = 1; i <= MAX_VARIANTS_PER_HERO; i += 1) {
     // eslint-disable-next-line no-await-in-loop
-    const found = await probeFirstExisting(heroVariantCandidates(hero, i));
+    const found = await probeFirstExisting(itemVariantCandidates(collectionKey, item, i));
     if (!found) break;
     urls.push(found);
   }
 
   if (urls.length > 0) return urls;
 
-  const single = await probeFirstExisting(heroVariantCandidates(hero, 0));
+  const single = await probeFirstExisting(itemVariantCandidates(collectionKey, item, 0));
   return single ? [single] : [];
 }
 
@@ -202,15 +230,10 @@ function normalizeText(s) {
   return (s || '').toString().trim().toLowerCase();
 }
 
-function matchesQuery(hero, q) {
+function matchesQuery(item, q) {
   if (!q) return true;
-  const hay = normalizeText(`${hero.rank} ${hero.name} ${hero.nickname}`);
+  const hay = normalizeText(`${item.rank || ''} ${item.name || ''} ${item.nickname || ''}`);
   return hay.includes(q);
-}
-
-function filterByGroup(hero, filter) {
-  if (filter === 'all') return true;
-  return hero.group === filter;
 }
 
 function setActiveFilterButton(filter) {
@@ -256,7 +279,7 @@ function createViewer() {
   });
 }
 
-function openViewer(hero) {
+function openViewer(collectionKey, item) {
   const viewer = document.getElementById('image-viewer');
   const img = document.getElementById('viewer-image');
   const title = document.getElementById('viewer-title');
@@ -266,9 +289,13 @@ function openViewer(hero) {
   const nextBtn = document.getElementById('viewer-next');
   const thumbs = document.getElementById('viewer-thumbs');
 
-  const groupText = hero.group === 'tiangang' ? '天罡' : '地煞';
-  title.textContent = `${pad3(hero.rank)} · ${hero.name}`;
-  sub.textContent = `${groupText} · ${hero.nickname}`;
+  if (collectionKey === 'shuihu') {
+    title.textContent = `${pad3(item.rank)} · ${item.name}`;
+    sub.textContent = item.nickname || '';
+  } else {
+    title.textContent = item.name;
+    sub.textContent = item.nickname || '';
+  }
 
   viewer.style.display = 'flex';
 
@@ -301,7 +328,7 @@ function openViewer(hero) {
     img.src = url;
 
     dl.href = url;
-    dl.download = `${heroBaseName(hero)}-${currentIndex + 1}.${(url.split('.').pop() || IMAGE_EXTS[0])}`;
+    dl.download = `${itemBaseName(collectionKey, item)}-${currentIndex + 1}.${(url.split('.').pop() || IMAGE_EXTS[0])}`;
 
     prevBtn.disabled = urls.length <= 1;
     nextBtn.disabled = urls.length <= 1;
@@ -311,11 +338,11 @@ function openViewer(hero) {
     });
   };
 
-  getHeroGalleryUrls(hero).then((list) => {
+  getItemGalleryUrls(collectionKey, item).then((list) => {
     urls = list || [];
 
     if (urls.length === 0) {
-      thumbs.innerHTML = '<div class="thumbs-empty">未找到该人物图片，请按命名规则放入 image/108/</div>';
+      thumbs.innerHTML = '<div class="thumbs-empty">未找到该人物图片，请按命名规则放入 image 下对应作品目录</div>';
       setCurrent(0);
       return;
     }
@@ -329,7 +356,7 @@ function openViewer(hero) {
 
       const t = document.createElement('img');
       t.loading = 'lazy';
-      t.alt = `${hero.name} 缩略图 ${idx + 1}`;
+      t.alt = `${item.name} 缩略图 ${idx + 1}`;
       t.src = url;
       t.onerror = () => {
         t.onerror = null;
@@ -350,9 +377,8 @@ function openViewer(hero) {
 
 function render(state) {
   const q = normalizeText(state.query);
-  const list = HEROES
-    .filter(h => filterByGroup(h, state.filter))
-    .filter(h => matchesQuery(h, q));
+  const items = state.collectionKey === 'xiyou' ? XIYOU : SHUIHU;
+  const list = items.filter(h => matchesQuery(h, q));
 
   gallery.innerHTML = '';
 
@@ -361,48 +387,61 @@ function render(state) {
     return;
   }
 
-  list.forEach(hero => {
+  list.forEach(item => {
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'hero-card';
-    card.title = `${pad3(hero.rank)} ${hero.name}（${hero.nickname}）`;
+    card.title = `${item.name}${item.nickname ? `（${item.nickname}）` : ''}`;
 
     const img = document.createElement('img');
     img.loading = 'lazy';
-    img.alt = `${hero.name}（${hero.nickname}）`;
-    setImageWithFallback(img, heroImageCandidates(hero));
+    img.alt = `${item.name}${item.nickname ? `（${item.nickname}）` : ''}`;
+    // 卡片优先显示 -1，其次单图
+    setImageWithFallback(img, [
+      ...itemVariantCandidates(state.collectionKey, item, 1),
+      ...itemVariantCandidates(state.collectionKey, item, 0)
+    ]);
 
     const meta = document.createElement('div');
     meta.className = 'hero-meta';
-    meta.innerHTML = `
-      <div class="hero-name">
-        <span class="hero-rank">${pad3(hero.rank)}</span>
-        <span class="hero-realname">${hero.name}</span>
-      </div>
-      <div class="hero-nickname">${hero.nickname}</div>
-    `;
+    if (state.collectionKey === 'shuihu') {
+      meta.innerHTML = `
+        <div class="hero-name">
+          <span class="hero-rank">${pad3(item.rank)}</span>
+          <span class="hero-realname">${item.name}</span>
+        </div>
+        <div class="hero-nickname">${item.nickname || ''}</div>
+      `;
+    } else {
+      meta.innerHTML = `
+        <div class="hero-name">
+          <span class="hero-realname">${item.name}</span>
+        </div>
+        <div class="hero-nickname">${item.nickname || ''}</div>
+      `;
+    }
 
     card.appendChild(img);
     card.appendChild(meta);
-    card.addEventListener('click', () => openViewer(hero));
+    card.addEventListener('click', () => openViewer(state.collectionKey, item));
 
     gallery.appendChild(card);
   });
 }
 
 const state = {
-  filter: 'all',
+  collectionKey: 'shuihu',
   query: ''
 };
 
 createViewer();
-setActiveFilterButton(state.filter);
+setActiveFilterButton(state.collectionKey);
 render(state);
 
 filterButtons.forEach(btn => {
   btn.addEventListener('click', () => {
-    state.filter = btn.dataset.filter || 'all';
-    setActiveFilterButton(state.filter);
+    state.collectionKey = btn.dataset.filter || 'shuihu';
+    setActiveFilterButton(state.collectionKey);
     render(state);
   });
 });
