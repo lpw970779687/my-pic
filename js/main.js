@@ -1,519 +1,420 @@
-// ==================== 素材数据 ====================
-const materialData = {
-    '都市人物(男)': [
-        {
-            id: 1,
-            thumbnail: 'image/都市人物(男)/都市人物_男1_s.jpg',
-            original: 'image/都市人物(男)/都市人物_男1.jpg',
-            name: '都市人物-男-1',
-            title: '都市青年角色设计',
-            description: '现代都市风格的男性角色设计，适合游戏、动画等项目使用。包含完整的角色立绘和动作素材。',
-            category: '都市人物(男)',
-            isFree: true,
-            isExclusive: true,
-            hasCopyright: true,
-            date: '2025-03-01',
-            gifs: [
-                'action/都市人物(男)/都市人物_男1_走路.gif',
-                'action/都市人物(男)/都市人物_男1_跑步.gif'
-            ]
-        },
-        {
-            id: 2,
-            thumbnail: 'image/都市人物(男)/都市人物_男2_s.jpg',
-            original: 'image/都市人物(男)/都市人物_男2.jpg',
-            name: '都市人物-男-2',
-            title: '时尚男性模特',
-            description: '时尚风格的男性角色，适合服装展示、广告设计等项目。',
-            category: '都市人物(男)',
-            isFree: true,
-            isExclusive: false,
-            hasCopyright: true,
-            date: '2025-03-02',
-            gifs: []
-        },
-        {
-            id: 3,
-            thumbnail: 'image/都市人物(男)/都市人物_男3_s.jpg',
-            original: 'image/都市人物(男)/都市人物_男3.jpg',
-            name: '都市人物-男-3',
-            title: '街头涂鸦艺术家',
-            description: '街头文化风格的艺术家角色，充满个性与创意。',
-            category: '都市人物(男)',
-            isFree: true,
-            isExclusive: true,
-            hasCopyright: true,
-            date: '2025-03-03',
-            gifs: []
-        },
-        {
-            id: 4,
-            thumbnail: 'image/都市人物(男)/都市人物_男4_s.jpg',
-            original: 'image/都市人物(男)/都市人物_男4.jpg',
-            name: '都市人物-男-4',
-            title: '程序员角色设计',
-            description: 'IT行业从业者形象，适合科技公司、互联网项目使用。',
-            category: '都市人物(男)',
-            isFree: true,
-            isExclusive: false,
-            hasCopyright: true,
-            date: '2025-03-04',
-            gifs: [
-                'action/都市人物(男)/都市人物_男1_走路.gif',
-                'action/都市人物(男)/都市人物_男1_跑步.gif'
-            ]
-        }
-    ],
-    '都市人物(女)': [
-        {
-            id: 5,
-            thumbnail: 'image/都市人物(女)/都市人物_女1_s.jpg',
-            original: 'image/都市人物(女)/都市人物_女1.jpg',
-            name: '都市人物-女-1',
-            title: '都市白领女性',
-            description: '职场女性形象设计，优雅大方，适合商务场景使用。',
-            category: '都市人物(女)',
-            isFree: true,
-            isExclusive: true,
-            hasCopyright: true,
-            date: '2025-03-05',
-            gifs: [
-                'action/都市人物(女)/都市人物_女1_走路.gif',
-                'action/都市人物(女)/都市人物_女1_跑步.gif'
-            ]
-        }
-    ],
-    '修仙人物(男)': [
-        {
-            id: 6,
-            thumbnail: 'image/修仙人物(男)/修仙人物_男1_s.jpg',
-            original: 'image/修仙人物(男)/修仙人物_男1.jpg',
-            name: '修仙人物-男-1',
-            title: '修真者角色设计',
-            description: '古风修仙题材男性角色，仙气飘飘，适合仙侠类游戏和小说插画。',
-            category: '修仙人物(男)',
-            isFree: true,
-            isExclusive: true,
-            hasCopyright: true,
-            date: '2025-03-06',
-            gifs: []
-        }
-    ],
-    '修仙人物(女)': [],
-    '动物': []
-};
-
-// ==================== 全局状态 ====================
-let currentPage = 1;
-const itemsPerPage = 12;
-let currentFilters = {
-    category: 'all'
-};
-let filteredMaterials = [];
-
-// ==================== DOM元素 ====================
 const gallery = document.getElementById('gallery');
-const paginationContainer = document.getElementById('pagination');
-const totalCountElement = document.getElementById('total-count');
-const searchInput = document.getElementById('search-input');
-const searchBtn = document.getElementById('search-btn');
+const searchInput = document.getElementById('search');
+const clearSearchBtn = document.getElementById('clear-search');
+const filterButtons = document.querySelectorAll('.filter-btn');
 
-// ==================== 初始化 ====================
-document.addEventListener('DOMContentLoaded', function() {
-    initFilters();
-    initMaterialModal();
-    loadMaterials();
+const PLACEHOLDER_SRC = 'image/placeholder.svg';
+const IMAGE_DIR = 'image/108';
+const IMAGE_EXTS = ['jpg', 'png', 'webp'];
+const MAX_VARIANTS_PER_HERO = 12;
+
+/**
+ * 数据说明
+ * - rank: 1~108
+ * - group: 'tiangang' | 'disha'
+ * - filename: 默认按 001-宋江.jpg 规则拼接（你把图放进去就会自动显示）
+ */
+const HEROES = [
+  // 天罡 36
+  { rank: 1, group: 'tiangang', name: '宋江', nickname: '呼保义 / 及时雨' },
+  { rank: 2, group: 'tiangang', name: '卢俊义', nickname: '玉麒麟' },
+  { rank: 3, group: 'tiangang', name: '吴用', nickname: '智多星' },
+  { rank: 4, group: 'tiangang', name: '公孙胜', nickname: '入云龙' },
+  { rank: 5, group: 'tiangang', name: '关胜', nickname: '大刀' },
+  { rank: 6, group: 'tiangang', name: '林冲', nickname: '豹子头' },
+  { rank: 7, group: 'tiangang', name: '秦明', nickname: '霹雳火' },
+  { rank: 8, group: 'tiangang', name: '呼延灼', nickname: '双鞭' },
+  { rank: 9, group: 'tiangang', name: '花荣', nickname: '小李广' },
+  { rank: 10, group: 'tiangang', name: '柴进', nickname: '小旋风' },
+  { rank: 11, group: 'tiangang', name: '李应', nickname: '扑天雕' },
+  { rank: 12, group: 'tiangang', name: '朱仝', nickname: '美髯公' },
+  { rank: 13, group: 'tiangang', name: '鲁智深', nickname: '花和尚' },
+  { rank: 14, group: 'tiangang', name: '武松', nickname: '行者' },
+  { rank: 15, group: 'tiangang', name: '董平', nickname: '双枪将' },
+  { rank: 16, group: 'tiangang', name: '张清', nickname: '没羽箭' },
+  { rank: 17, group: 'tiangang', name: '杨志', nickname: '青面兽' },
+  { rank: 18, group: 'tiangang', name: '徐宁', nickname: '金枪手' },
+  { rank: 19, group: 'tiangang', name: '索超', nickname: '急先锋' },
+  { rank: 20, group: 'tiangang', name: '戴宗', nickname: '神行太保' },
+  { rank: 21, group: 'tiangang', name: '刘唐', nickname: '赤发鬼' },
+  { rank: 22, group: 'tiangang', name: '李逵', nickname: '黑旋风' },
+  { rank: 23, group: 'tiangang', name: '史进', nickname: '九纹龙' },
+  { rank: 24, group: 'tiangang', name: '穆弘', nickname: '没遮拦' },
+  { rank: 25, group: 'tiangang', name: '雷横', nickname: '插翅虎' },
+  { rank: 26, group: 'tiangang', name: '李俊', nickname: '混江龙' },
+  { rank: 27, group: 'tiangang', name: '阮小二', nickname: '立地太岁' },
+  { rank: 28, group: 'tiangang', name: '阮小五', nickname: '短命二郎' },
+  { rank: 29, group: 'tiangang', name: '阮小七', nickname: '活阎罗' },
+  { rank: 30, group: 'tiangang', name: '张横', nickname: '船火儿' },
+  { rank: 31, group: 'tiangang', name: '张顺', nickname: '浪里白条' },
+  { rank: 32, group: 'tiangang', name: '杨雄', nickname: '病关索' },
+  { rank: 33, group: 'tiangang', name: '石秀', nickname: '拼命三郎' },
+  { rank: 34, group: 'tiangang', name: '解珍', nickname: '两头蛇' },
+  { rank: 35, group: 'tiangang', name: '解宝', nickname: '双尾蝎' },
+  { rank: 36, group: 'tiangang', name: '燕青', nickname: '浪子' },
+
+  // 地煞 72
+  { rank: 37, group: 'disha', name: '朱武', nickname: '神机军师' },
+  { rank: 38, group: 'disha', name: '黄信', nickname: '镇三山' },
+  { rank: 39, group: 'disha', name: '孙立', nickname: '病尉迟' },
+  { rank: 40, group: 'disha', name: '宣赞', nickname: '丑郡马' },
+  { rank: 41, group: 'disha', name: '郝思文', nickname: '井木犴' },
+  { rank: 42, group: 'disha', name: '韩滔', nickname: '百胜将' },
+  { rank: 43, group: 'disha', name: '彭玘', nickname: '天目将' },
+  { rank: 44, group: 'disha', name: '单廷圭', nickname: '圣水将' },
+  { rank: 45, group: 'disha', name: '魏定国', nickname: '神火将' },
+  { rank: 46, group: 'disha', name: '萧让', nickname: '圣手书生' },
+  { rank: 47, group: 'disha', name: '裴宣', nickname: '铁面孔目' },
+  { rank: 48, group: 'disha', name: '欧鹏', nickname: '摩云金翅' },
+  { rank: 49, group: 'disha', name: '邓飞', nickname: '火眼狻猊' },
+  { rank: 50, group: 'disha', name: '燕顺', nickname: '锦毛虎' },
+  { rank: 51, group: 'disha', name: '杨林', nickname: '锦豹子' },
+  { rank: 52, group: 'disha', name: '凌振', nickname: '轰天雷' },
+  { rank: 53, group: 'disha', name: '蒋敬', nickname: '神算子' },
+  { rank: 54, group: 'disha', name: '吕方', nickname: '小温侯' },
+  { rank: 55, group: 'disha', name: '郭盛', nickname: '赛仁贵' },
+  { rank: 56, group: 'disha', name: '安道全', nickname: '神医' },
+  { rank: 57, group: 'disha', name: '皇甫端', nickname: '紫髯伯' },
+  { rank: 58, group: 'disha', name: '王英', nickname: '矮脚虎' },
+  { rank: 59, group: 'disha', name: '扈三娘', nickname: '一丈青' },
+  { rank: 60, group: 'disha', name: '鲍旭', nickname: '丧门神' },
+  { rank: 61, group: 'disha', name: '樊瑞', nickname: '混世魔王' },
+  { rank: 62, group: 'disha', name: '孔明', nickname: '毛头星' },
+  { rank: 63, group: 'disha', name: '孔亮', nickname: '独火星' },
+  { rank: 64, group: 'disha', name: '孟康', nickname: '玉幡竿' },
+  { rank: 65, group: 'disha', name: '项充', nickname: '八臂哪吒' },
+  { rank: 66, group: 'disha', name: '李衮', nickname: '飞天大圣' },
+  { rank: 67, group: 'disha', name: '金大坚', nickname: '玉臂匠' },
+  { rank: 68, group: 'disha', name: '马麟', nickname: '铁笛仙' },
+  { rank: 69, group: 'disha', name: '童威', nickname: '出洞蛟' },
+  { rank: 70, group: 'disha', name: '童猛', nickname: '翻江蜃' },
+  { rank: 71, group: 'disha', name: '侯健', nickname: '通臂猿' },
+  { rank: 72, group: 'disha', name: '陈达', nickname: '跳涧虎' },
+  { rank: 73, group: 'disha', name: '杨春', nickname: '白花蛇' },
+  { rank: 74, group: 'disha', name: '郑天寿', nickname: '白面郎君' },
+  { rank: 75, group: 'disha', name: '陶宗旺', nickname: '九尾龟' },
+  { rank: 76, group: 'disha', name: '宋清', nickname: '铁扇子' },
+  { rank: 77, group: 'disha', name: '乐和', nickname: '铁叫子' },
+  { rank: 78, group: 'disha', name: '龚旺', nickname: '花项虎' },
+  { rank: 79, group: 'disha', name: '丁得孙', nickname: '中箭虎' },
+  { rank: 80, group: 'disha', name: '穆春', nickname: '小遮拦' },
+  { rank: 81, group: 'disha', name: '曹正', nickname: '操刀鬼' },
+  { rank: 82, group: 'disha', name: '宋万', nickname: '云里金刚' },
+  { rank: 83, group: 'disha', name: '杜迁', nickname: '摸着天' },
+  { rank: 84, group: 'disha', name: '薛永', nickname: '病大虫' },
+  { rank: 85, group: 'disha', name: '施恩', nickname: '金眼彪' },
+  { rank: 86, group: 'disha', name: '李忠', nickname: '打虎将' },
+  { rank: 87, group: 'disha', name: '周通', nickname: '小霸王' },
+  { rank: 88, group: 'disha', name: '汤隆', nickname: '金钱豹子' },
+  { rank: 89, group: 'disha', name: '杜兴', nickname: '鬼脸儿' },
+  { rank: 90, group: 'disha', name: '邹渊', nickname: '出林龙' },
+  { rank: 91, group: 'disha', name: '邹润', nickname: '独角龙' },
+  { rank: 92, group: 'disha', name: '朱贵', nickname: '旱地忽律' },
+  { rank: 93, group: 'disha', name: '朱富', nickname: '笑面虎' },
+  { rank: 94, group: 'disha', name: '蔡福', nickname: '铁臂膊' },
+  { rank: 95, group: 'disha', name: '蔡庆', nickname: '一枝花' },
+  { rank: 96, group: 'disha', name: '李立', nickname: '催命判官' },
+  { rank: 97, group: 'disha', name: '李云', nickname: '青眼虎' },
+  { rank: 98, group: 'disha', name: '焦挺', nickname: '没面目' },
+  { rank: 99, group: 'disha', name: '石勇', nickname: '石将军' },
+  { rank: 100, group: 'disha', name: '孙新', nickname: '小尉迟' },
+  { rank: 101, group: 'disha', name: '顾大嫂', nickname: '母大虫' },
+  { rank: 102, group: 'disha', name: '张青', nickname: '菜园子' },
+  { rank: 103, group: 'disha', name: '孙二娘', nickname: '母夜叉' },
+  { rank: 104, group: 'disha', name: '王定六', nickname: '活闪婆' },
+  { rank: 105, group: 'disha', name: '郁保四', nickname: '险道神' },
+  { rank: 106, group: 'disha', name: '白胜', nickname: '白日鼠' },
+  { rank: 107, group: 'disha', name: '时迁', nickname: '鼓上蚤' },
+  { rank: 108, group: 'disha', name: '段景住', nickname: '金毛犬' }
+];
+
+function pad3(n) {
+  return String(n).padStart(3, '0');
+}
+
+function heroBaseName(hero) {
+  return `${pad3(hero.rank)}-${hero.name}`;
+}
+
+function heroImageCandidates(hero) {
+  const base = heroBaseName(hero);
+  return IMAGE_EXTS.map(ext => `${IMAGE_DIR}/${base}.${ext}`);
+}
+
+function heroVariantCandidates(hero, variantIndex) {
+  const base = heroBaseName(hero);
+  const suffix = variantIndex ? `-${variantIndex}` : '';
+  return IMAGE_EXTS.map(ext => `${IMAGE_DIR}/${base}${suffix}.${ext}`);
+}
+
+function setImageWithFallback(imgEl, candidates) {
+  let i = 0;
+  imgEl.onerror = () => {
+    i += 1;
+    if (i < candidates.length) {
+      imgEl.src = candidates[i];
+      return;
+    }
+    imgEl.onerror = null;
+    imgEl.src = PLACEHOLDER_SRC;
+  };
+  imgEl.src = candidates[i];
+}
+
+function probeFirstExisting(candidates) {
+  return new Promise((resolve) => {
+    let i = 0;
+    const test = new Image();
+    const tryNext = () => {
+      if (i >= candidates.length) {
+        resolve(null);
+        return;
+      }
+      const url = candidates[i];
+      test.onload = () => resolve(url);
+      test.onerror = () => {
+        i += 1;
+        tryNext();
+      };
+      test.src = url;
+    };
+    tryNext();
+  });
+}
+
+async function getHeroGalleryUrls(hero) {
+  const urls = [];
+
+  for (let i = 1; i <= MAX_VARIANTS_PER_HERO; i += 1) {
+    // eslint-disable-next-line no-await-in-loop
+    const found = await probeFirstExisting(heroVariantCandidates(hero, i));
+    if (!found) break;
+    urls.push(found);
+  }
+
+  if (urls.length > 0) return urls;
+
+  const single = await probeFirstExisting(heroVariantCandidates(hero, 0));
+  return single ? [single] : [];
+}
+
+function normalizeText(s) {
+  return (s || '').toString().trim().toLowerCase();
+}
+
+function matchesQuery(hero, q) {
+  if (!q) return true;
+  const hay = normalizeText(`${hero.rank} ${hero.name} ${hero.nickname}`);
+  return hay.includes(q);
+}
+
+function filterByGroup(hero, filter) {
+  if (filter === 'all') return true;
+  return hero.group === filter;
+}
+
+function setActiveFilterButton(filter) {
+  filterButtons.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === filter);
+  });
+}
+
+function createViewer() {
+  if (document.getElementById('image-viewer')) return;
+
+  const viewer = document.createElement('div');
+  viewer.id = 'image-viewer';
+  viewer.className = 'image-viewer';
+  viewer.innerHTML = `
+    <div class="viewer-content">
+      <button class="close-btn" type="button" aria-label="关闭">×</button>
+      <div class="viewer-head">
+        <div class="viewer-title" id="viewer-title"></div>
+        <div class="viewer-sub" id="viewer-sub"></div>
+      </div>
+      <div class="viewer-body">
+        <button id="viewer-prev" class="nav-btn" type="button" aria-label="上一张">‹</button>
+        <img id="viewer-image" alt="大图预览" />
+        <button id="viewer-next" class="nav-btn" type="button" aria-label="下一张">›</button>
+      </div>
+      <div class="viewer-thumbs" id="viewer-thumbs" aria-label="缩略图"></div>
+      <div class="viewer-actions">
+        <a id="viewer-download" class="control-btn" href="#" download>下载原图</a>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(viewer);
+
+  const close = () => (viewer.style.display = 'none');
+  viewer.querySelector('.close-btn').addEventListener('click', close);
+  viewer.addEventListener('click', (e) => {
+    if (e.target === viewer) close();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && viewer.style.display === 'flex') close();
+  });
+}
+
+function openViewer(hero) {
+  const viewer = document.getElementById('image-viewer');
+  const img = document.getElementById('viewer-image');
+  const title = document.getElementById('viewer-title');
+  const sub = document.getElementById('viewer-sub');
+  const dl = document.getElementById('viewer-download');
+  const prevBtn = document.getElementById('viewer-prev');
+  const nextBtn = document.getElementById('viewer-next');
+  const thumbs = document.getElementById('viewer-thumbs');
+
+  const groupText = hero.group === 'tiangang' ? '天罡' : '地煞';
+  title.textContent = `${pad3(hero.rank)} · ${hero.name}`;
+  sub.textContent = `${groupText} · ${hero.nickname}`;
+
+  viewer.style.display = 'flex';
+
+  img.onerror = null;
+  img.src = PLACEHOLDER_SRC;
+  thumbs.innerHTML = '<div class="thumbs-loading">加载图片列表...</div>';
+  prevBtn.disabled = true;
+  nextBtn.disabled = true;
+  dl.href = '#';
+
+  let currentIndex = 0;
+  let urls = [];
+
+  const setCurrent = (idx) => {
+    if (!urls || urls.length === 0) {
+      img.onerror = null;
+      img.src = PLACEHOLDER_SRC;
+      dl.href = '#';
+      prevBtn.disabled = true;
+      nextBtn.disabled = true;
+      return;
+    }
+
+    currentIndex = ((idx % urls.length) + urls.length) % urls.length;
+    const url = urls[currentIndex];
+    img.onerror = () => {
+      img.onerror = null;
+      img.src = PLACEHOLDER_SRC;
+    };
+    img.src = url;
+
+    dl.href = url;
+    dl.download = `${heroBaseName(hero)}-${currentIndex + 1}.${(url.split('.').pop() || IMAGE_EXTS[0])}`;
+
+    prevBtn.disabled = urls.length <= 1;
+    nextBtn.disabled = urls.length <= 1;
+
+    Array.from(thumbs.querySelectorAll('.thumb')).forEach((el, i) => {
+      el.classList.toggle('active', i === currentIndex);
+    });
+  };
+
+  getHeroGalleryUrls(hero).then((list) => {
+    urls = list || [];
+
+    if (urls.length === 0) {
+      thumbs.innerHTML = '<div class="thumbs-empty">未找到该人物图片，请按命名规则放入 image/108/</div>';
+      setCurrent(0);
+      return;
+    }
+
+    thumbs.innerHTML = '';
+    urls.forEach((url, idx) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'thumb';
+      b.title = `第 ${idx + 1} 张`;
+
+      const t = document.createElement('img');
+      t.loading = 'lazy';
+      t.alt = `${hero.name} 缩略图 ${idx + 1}`;
+      t.src = url;
+      t.onerror = () => {
+        t.onerror = null;
+        t.src = PLACEHOLDER_SRC;
+      };
+
+      b.appendChild(t);
+      b.addEventListener('click', () => setCurrent(idx));
+      thumbs.appendChild(b);
+    });
+
+    prevBtn.onclick = () => setCurrent(currentIndex - 1);
+    nextBtn.onclick = () => setCurrent(currentIndex + 1);
+
+    setCurrent(0);
+  });
+}
+
+function render(state) {
+  const q = normalizeText(state.query);
+  const list = HEROES
+    .filter(h => filterByGroup(h, state.filter))
+    .filter(h => matchesQuery(h, q));
+
+  gallery.innerHTML = '';
+
+  if (list.length === 0) {
+    gallery.innerHTML = '<p class="hint">没有匹配结果，换个关键词试试（例如：武松 / 行者）。</p>';
+    return;
+  }
+
+  list.forEach(hero => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'hero-card';
+    card.title = `${pad3(hero.rank)} ${hero.name}（${hero.nickname}）`;
+
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.alt = `${hero.name}（${hero.nickname}）`;
+    setImageWithFallback(img, heroImageCandidates(hero));
+
+    const meta = document.createElement('div');
+    meta.className = 'hero-meta';
+    meta.innerHTML = `
+      <div class="hero-name">
+        <span class="hero-rank">${pad3(hero.rank)}</span>
+        <span class="hero-realname">${hero.name}</span>
+      </div>
+      <div class="hero-nickname">${hero.nickname}</div>
+    `;
+
+    card.appendChild(img);
+    card.appendChild(meta);
+    card.addEventListener('click', () => openViewer(hero));
+
+    gallery.appendChild(card);
+  });
+}
+
+const state = {
+  filter: 'all',
+  query: ''
+};
+
+createViewer();
+setActiveFilterButton(state.filter);
+render(state);
+
+filterButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.filter = btn.dataset.filter || 'all';
+    setActiveFilterButton(state.filter);
+    render(state);
+  });
 });
 
-// ==================== 筛选功能 ====================
-function initFilters() {
-    // 分类筛选
-    const categoryBtns = document.querySelectorAll('#category-filter .filter-btn');
-    categoryBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            categoryBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            currentFilters.category = this.dataset.category;
-            currentPage = 1;
-            loadMaterials();
-        });
-    });
+searchInput.addEventListener('input', () => {
+  state.query = searchInput.value;
+  render(state);
+});
 
-    // 搜索功能
-    searchBtn.addEventListener('click', performSearch);
-    searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            performSearch();
-        }
-    });
-}
-
-function performSearch() {
-    const keyword = searchInput.value.trim().toLowerCase();
-    if (keyword) {
-        currentFilters.search = keyword;
-    } else {
-        delete currentFilters.search;
-    }
-    currentPage = 1;
-    loadMaterials();
-}
-
-// ==================== 加载素材 ====================
-function loadMaterials() {
-    // 显示加载状态
-    showLoading();
-
-    // 使用 requestAnimationFrame 确保在下一帧渲染，避免阻塞
-    requestAnimationFrame(() => {
-        // 筛选素材
-        filteredMaterials = filterMaterials();
-        
-        // 更新总数
-        totalCountElement.textContent = filteredMaterials.length;
-        
-        // 清空画廊
-        gallery.innerHTML = '';
-        
-        if (filteredMaterials.length === 0) {
-            showEmptyState();
-            paginationContainer.innerHTML = '';
-            return;
-        }
-
-        // 分页
-        const totalPages = Math.ceil(filteredMaterials.length / itemsPerPage);
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const pageMaterials = filteredMaterials.slice(startIndex, endIndex);
-
-        // 渲染素材卡片
-        pageMaterials.forEach(material => {
-            const card = createMaterialCard(material);
-            gallery.appendChild(card);
-        });
-
-        // 渲染分页
-        if (totalPages > 1) {
-            renderPagination(totalPages);
-        } else {
-            paginationContainer.innerHTML = '';
-        }
-    });
-}
-
-function filterMaterials() {
-    let materials = [];
-    
-    // 收集所有素材
-    Object.values(materialData).forEach(categoryMaterials => {
-        materials = materials.concat(categoryMaterials);
-    });
-
-    // 应用筛选条件
-    return materials.filter(material => {
-        // 分类筛选
-        if (currentFilters.category !== 'all' && material.category !== currentFilters.category) {
-            return false;
-        }
-
-        // 搜索关键词
-        if (currentFilters.search) {
-            const searchLower = currentFilters.search.toLowerCase();
-            const matchTitle = material.title.toLowerCase().includes(searchLower);
-            const matchName = material.name.toLowerCase().includes(searchLower);
-            const matchCategory = material.category.toLowerCase().includes(searchLower);
-            if (!matchTitle && !matchName && !matchCategory) {
-                return false;
-            }
-        }
-
-        return true;
-    });
-}
-
-function createMaterialCard(material) {
-    const card = document.createElement('div');
-    card.className = 'material-card';
-    card.dataset.id = material.id;
-
-    // 标签
-    let tagsHtml = '';
-    tagsHtml += '<span class="card-tag tag-free">免费</span>';
-    if (material.isExclusive) {
-        tagsHtml += '<span class="card-tag tag-exclusive">独家</span>';
-    }
-    if (material.hasCopyright) {
-        tagsHtml += '<span class="card-tag tag-copyright">版权</span>';
-    }
-
-    card.innerHTML = `
-        <div class="card-image">
-            <img src="${material.thumbnail}" alt="${material.title}" loading="lazy">
-            <div class="card-tags">${tagsHtml}</div>
-        </div>
-        <div class="card-info">
-            <h3 class="card-title">${material.title}</h3>
-            <div class="card-meta">
-                <span class="card-category">${material.category}</span>
-                <span>${material.date}</span>
-            </div>
-        </div>
-    `;
-
-    card.addEventListener('click', () => openMaterialModal(material));
-
-    return card;
-}
-
-function showLoading() {
-    gallery.innerHTML = `
-        <div class="loading-container">
-            <div class="loading-spinner"></div>
-            <p class="loading-text">加载中...</p>
-        </div>
-    `;
-}
-
-function showEmptyState() {
-    gallery.innerHTML = `
-        <div class="empty-state">
-            <div class="empty-icon">📭</div>
-            <p class="empty-text">暂无符合条件的素材</p>
-        </div>
-    `;
-}
-
-// ==================== 分页功能 ====================
-function renderPagination(totalPages) {
-    paginationContainer.innerHTML = '';
-
-    // 总数信息
-    const totalInfo = document.createElement('span');
-    totalInfo.className = 'total-info';
-    totalInfo.textContent = `共${filteredMaterials.length}条`;
-    paginationContainer.appendChild(totalInfo);
-
-    // 上一页
-    const prevBtn = document.createElement('button');
-    prevBtn.className = 'page-nav-btn';
-    prevBtn.innerHTML = '&lt;';
-    prevBtn.disabled = currentPage === 1;
-    prevBtn.addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            loadMaterials();
-            scrollToTop();
-        }
-    });
-    paginationContainer.appendChild(prevBtn);
-
-    // 页码按钮
-    let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(totalPages, startPage + 4);
-    
-    if (endPage - startPage < 4) {
-        startPage = Math.max(1, endPage - 4);
-    }
-
-    if (startPage > 1) {
-        const firstBtn = createPageButton(1);
-        paginationContainer.appendChild(firstBtn);
-        if (startPage > 2) {
-            const ellipsis = document.createElement('span');
-            ellipsis.className = 'ellipsis';
-            ellipsis.textContent = '...';
-            paginationContainer.appendChild(ellipsis);
-        }
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-        const btn = createPageButton(i);
-        paginationContainer.appendChild(btn);
-    }
-
-    if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-            const ellipsis = document.createElement('span');
-            ellipsis.className = 'ellipsis';
-            ellipsis.textContent = '...';
-            paginationContainer.appendChild(ellipsis);
-        }
-        const lastBtn = createPageButton(totalPages);
-        paginationContainer.appendChild(lastBtn);
-    }
-
-    // 下一页
-    const nextBtn = document.createElement('button');
-    nextBtn.className = 'page-nav-btn';
-    nextBtn.innerHTML = '&gt;';
-    nextBtn.disabled = currentPage === totalPages;
-    nextBtn.addEventListener('click', () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            loadMaterials();
-            scrollToTop();
-        }
-    });
-    paginationContainer.appendChild(nextBtn);
-
-    // 跳转输入
-    const goToDiv = document.createElement('div');
-    goToDiv.className = 'go-to-page';
-    goToDiv.innerHTML = `
-        <span>前往</span>
-        <input type="number" class="page-input" min="1" max="${totalPages}" value="${currentPage}">
-        <span>页</span>
-        <button class="go-btn">确定</button>
-    `;
-    
-    const pageInput = goToDiv.querySelector('.page-input');
-    const goBtn = goToDiv.querySelector('.go-btn');
-    
-    goBtn.addEventListener('click', () => {
-        let page = parseInt(pageInput.value);
-        if (page >= 1 && page <= totalPages) {
-            currentPage = page;
-            loadMaterials();
-            scrollToTop();
-        }
-    });
-    
-    pageInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            goBtn.click();
-        }
-    });
-    
-    paginationContainer.appendChild(goToDiv);
-}
-
-function createPageButton(pageNum) {
-    const btn = document.createElement('button');
-    btn.className = 'page-btn';
-    if (pageNum === currentPage) {
-        btn.classList.add('active');
-    }
-    btn.textContent = pageNum;
-    btn.addEventListener('click', () => {
-        currentPage = pageNum;
-        loadMaterials();
-        scrollToTop();
-    });
-    return btn;
-}
-
-function scrollToTop() {
-    document.querySelector('.main-content').scrollIntoView({ behavior: 'smooth' });
-}
-
-// ==================== 素材详情弹窗 ====================
-let currentMaterial = null;
-
-function initMaterialModal() {
-    const modal = document.getElementById('material-modal');
-    const closeBtn = modal.querySelector('.modal-close');
-
-    closeBtn.addEventListener('click', closeMaterialModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeMaterialModal();
-        }
-    });
-
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            closeMaterialModal();
-        }
-    });
-
-    // 下载按钮
-    document.getElementById('btn-download').addEventListener('click', () => {
-        if (currentMaterial) {
-            downloadMaterial(currentMaterial);
-        }
-    });
-}
-
-function openMaterialModal(material) {
-    currentMaterial = material;
-    const modal = document.getElementById('material-modal');
-
-    // 填充数据
-    document.getElementById('modal-main-image').src = material.original;
-    document.getElementById('modal-title').textContent = material.title;
-    document.getElementById('modal-category').textContent = material.category;
-    document.getElementById('modal-date').textContent = material.date;
-    document.getElementById('modal-description').textContent = material.description || '暂无描述';
-
-    // 标签
-    const exclusiveTag = document.getElementById('modal-tag-exclusive');
-    const copyrightTag = document.getElementById('modal-tag-copyright');
-    exclusiveTag.style.display = material.isExclusive ? 'inline-block' : 'none';
-    copyrightTag.style.display = material.hasCopyright ? 'inline-block' : 'none';
-
-    // 缩略图
-    const thumbnailsContainer = document.getElementById('modal-thumbnails');
-    thumbnailsContainer.innerHTML = `
-        <img src="${material.thumbnail}" class="active" data-src="${material.original}">
-    `;
-
-    // 如果有GIF，添加GIF缩略图
-    if (material.gifs && material.gifs.length > 0) {
-        material.gifs.forEach(gif => {
-            const img = document.createElement('img');
-            img.src = gif;
-            img.dataset.src = gif;
-            img.addEventListener('click', function() {
-                document.getElementById('modal-main-image').src = this.dataset.src;
-                thumbnailsContainer.querySelectorAll('img').forEach(thumb => thumb.classList.remove('active'));
-                this.classList.add('active');
-            });
-            thumbnailsContainer.appendChild(img);
-        });
-    }
-
-    // 缩略图点击事件
-    thumbnailsContainer.querySelectorAll('img').forEach(thumb => {
-        thumb.addEventListener('click', function() {
-            document.getElementById('modal-main-image').src = this.dataset.src;
-            thumbnailsContainer.querySelectorAll('img').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeMaterialModal() {
-    const modal = document.getElementById('material-modal');
-    modal.style.display = 'none';
-    document.body.style.overflow = '';
-    currentMaterial = null;
-}
-
-function downloadMaterial(material) {
-    // 模拟下载
-    const btn = document.getElementById('btn-download');
-    const originalText = btn.textContent;
-    btn.textContent = '下载中...';
-    btn.disabled = true;
-
-    setTimeout(() => {
-        // 创建下载链接
-        const link = document.createElement('a');
-        link.href = material.original;
-        link.download = `${material.name}.jpg`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        btn.textContent = '下载成功';
-        setTimeout(() => {
-            btn.textContent = originalText;
-            btn.disabled = false;
-        }, 1500);
-    }, 1000);
-}
-
+clearSearchBtn.addEventListener('click', () => {
+  searchInput.value = '';
+  state.query = '';
+  render(state);
+  searchInput.focus();
+});
