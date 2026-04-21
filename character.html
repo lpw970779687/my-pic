@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人物详情 - 古典名著图片展示</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">📚 古典名著图片展示</div>
+            <div class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="shuihu.html">水浒传</a>
+                <a href="xiyou.html">西游记</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="category-header">
+            <h1 id="characterName">人物名称</h1>
+            <div class="category-meta">
+                <span id="imageCount">📊 图片：0张</span>
+            </div>
+        </header>
+
+        <div class="character-detail">
+            <div class="character-main">
+                <div class="main-image">
+                    <img id="mainImage" src="" alt="">
+                </div>
+                <div class="character-info">
+                    <h2 id="characterTitle">人物称号</h2>
+                    <p id="characterDescription">人物描述</p>
+                    <div class="character-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">称号：</span>
+                            <span id="statTitle">-</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">图片数：</span>
+                            <span id="statImageCount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="image-navigator">
+                <button class="nav-btn prev" onclick="navigateImage(-1)">
+                    <span>←</span>
+                </button>
+                <div class="nav-images">
+                    <div class="nav-images-container" id="navImages">
+                    </div>
+                </div>
+                <button class="nav-btn next" onclick="navigateImage(1)">
+                    <span>→</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="back-section">
+            <a id="backLink" href="#" class="back-btn">← 返回人物列表</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 古典名著图片展示 | 基于 GitHub Pages 托管</p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script>
+        let currentCharacter = null;
+        let currentImageIndex = 0;
+        let currentBook = null;
+
+        function getParamsFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                book: params.get('book'),
+                name: params.get('name')
+            };
+        }
+
+        function loadCharacter() {
+            const { book, name } = getParamsFromURL();
+            
+            if (!book || !name) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentBook = book;
+            
+            let config = null;
+            switch (book) {
+                case 'shuihu':
+                    config = shuihuConfig;
+                    break;
+                case 'xiyou':
+                    config = xiyouConfig;
+                    break;
+                default:
+                    window.location.href = 'index.html';
+                    return;
+            }
+
+            currentCharacter = config.characters.find(c => c.name === name);
+            if (!currentCharacter) {
+                window.location.href = book + '.html';
+                return;
+            }
+
+            document.getElementById('characterName').textContent = currentCharacter.name;
+            document.getElementById('characterTitle').textContent = currentCharacter.title;
+            document.getElementById('characterDescription').textContent = currentCharacter.description;
+            document.getElementById('statTitle').textContent = currentCharacter.title;
+            document.getElementById('statImageCount').textContent = currentCharacter.images.length + ' 张';
+            document.getElementById('imageCount').textContent = '📊 图片：' + currentCharacter.images.length + '张';
+            document.title = currentCharacter.name + ' - 人物详情 - 古典名著图片展示';
+
+            document.getElementById('backLink').href = book + '-renwu.html';
+
+            loadMainImage(0);
+            loadNavImages();
+        }
+
+        function loadMainImage(index) {
+            const mainImage = document.getElementById('mainImage');
+            const fullPath = currentCharacter.imagePath + currentCharacter.images[index];
+            mainImage.src = fullPath;
+            mainImage.alt = currentCharacter.name + ' 第' + (index + 1) + '张';
+            currentImageIndex = index;
+
+            updateNavImages();
+        }
+
+        function loadNavImages() {
+            const navImages = document.getElementById('navImages');
+            navImages.innerHTML = '';
+
+            currentCharacter.images.forEach((imageName, index) => {
+                const fullPath = currentCharacter.imagePath + imageName;
+                const navItem = document.createElement('div');
+                navItem.className = 'nav-image-item';
+                if (index === 0) {
+                    navItem.classList.add('active');
+                }
+                navItem.onclick = function() {
+                    loadMainImage(index);
+                };
+
+                navItem.innerHTML = '<img src="' + fullPath + '" alt="第' + (index + 1) + '张">';
+                navImages.appendChild(navItem);
+            });
+        }
+
+        function updateNavImages() {
+            const navItems = document.querySelectorAll('.nav-image-item');
+            navItems.forEach((item, index) => {
+                if (index === currentImageIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function navigateImage(direction) {
+            const newIndex = currentImageIndex + direction;
+            if (newIndex >= 0 && newIndex < currentCharacter.images.length) {
+                loadMainImage(newIndex);
+            }
+        }
+
+        loadCharacter();
+    </script>
+</body>
+</html>

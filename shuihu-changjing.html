@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水浒传-场景 - 古典名著图片展示</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">📚 古典名著图片展示</div>
+            <div class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="shuihu.html">水浒传</a>
+                <a href="shuihu-changjing.html" class="active">场景</a>
+                <a href="xiyou.html">西游记</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="category-header">
+            <h1>水浒传 - 场景</h1>
+            <p class="category-intro">水浒传中的重要场景，如梁山泊、野猪林等</p>
+            <div class="category-meta">
+                <span>🏞️ 场景：6个</span>
+                <span>🎨 图片：6张</span>
+            </div>
+        </header>
+
+        <div class="gallery">
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="https://picsum.photos/600/400?random=40" alt="梁山泊">
+                <div class="gallery-item-info">
+                    <h3>梁山泊</h3>
+                    <p>一百零八将聚义之地，水泊梁山</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="https://picsum.photos/600/400?random=41" alt="野猪林">
+                <div class="gallery-item-info">
+                    <h3>野猪林</h3>
+                    <p>鲁智深救林冲之地，险象环生</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="https://picsum.photos/600/400?random=42" alt="景阳冈">
+                <div class="gallery-item-info">
+                    <h3>景阳冈</h3>
+                    <p>武松打虎之地，英雄气概</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="https://picsum.photos/600/400?random=43" alt="狮子楼">
+                <div class="gallery-item-info">
+                    <h3>狮子楼</h3>
+                    <p>武松斗杀西门庆，为兄报仇</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="https://picsum.photos/600/400?random=44" alt="大名府">
+                <div class="gallery-item-info">
+                    <h3>大名府</h3>
+                    <p>卢俊义被陷害之地，繁华都市</p>
+                </div>
+            </div>
+
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="https://picsum.photos/600/400?random=45" alt="黄泥岗">
+                <div class="gallery-item-info">
+                    <h3>黄泥岗</h3>
+                    <p>智取生辰纲之地，吴用献计</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="back-section">
+            <a href="shuihu.html" class="back-btn">← 返回水浒传</a>
+        </div>
+    </div>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <span class="close" onclick="closeLightbox()">&times;</span>
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <img id="lightbox-img" src="" alt="">
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 古典名著图片展示 | 基于 GitHub Pages 托管</p>
+    </footer>
+
+    <script>
+        function openLightbox(element) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            
+            const img = element.querySelector('img');
+            const title = element.querySelector('h3').textContent;
+            
+            lightboxImg.src = img.src;
+            lightboxCaption.textContent = title;
+            lightbox.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-item-info {
+            padding: 20px;
+        }
+
+        .gallery-item-title {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .gallery-item-description {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .lightbox-content {
+            position: relative;
+            margin: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 1001;
+        }
+
+        .close:hover {
+            color: #667eea;
+        }
+
+        .lightbox-caption {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            font-size: 1.2em;
+        }
+
+        .upload-btn {
+            display: block;
+            margin: 30px auto;
+            padding: 15px 40px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .upload-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 图片展示画廊</h1>
+        
+        <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+            + 添加图片
+        </button>
+        <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFileSelect(event)">
+
+        <div class="gallery" id="gallery">
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="https://picsum.photos/400/300?random=1" alt="示例图片 1">
+                <div class="gallery-item-info">
+                    <div class="gallery-item-title">示例图片 1</div>
+                    <div class="gallery-item-description">这是一张美丽的风景图片，展示了大自然的魅力。</div>
+                </div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="https://picsum.photos/400/300?random=2" alt="示例图片 2">
+                <div class="gallery-item-info">
+                    <div class="gallery-item-title">示例图片 2</div>
+                    <div class="gallery-item-description">城市风光，现代建筑的美丽景色。</div>
+                </div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="https://picsum.photos/400/300?random=3" alt="示例图片 3">
+                <div class="gallery-item-info">
+                    <div class="gallery-item-title">示例图片 3</div>
+                    <div class="gallery-item-description">艺术摄影，捕捉生活中的美好瞬间。</div>
+                </div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="https://picsum.photos/400/300?random=4" alt="示例图片 4">
+                <div class="gallery-item-info">
+                    <div class="gallery-item-title">示例图片 4</div>
+                    <div class="gallery-item-description">自然生态，野生动物的精彩瞬间。</div>
+                </div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="https://picsum.photos/400/300?random=5" alt="示例图片 5">
+                <div class="gallery-item-info">
+                    <div class="gallery-item-title">示例图片 5</div>
+                    <div class="gallery-item-description">美食摄影，令人垂涎的美味佳肴。</div>
+                </div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(this)">
+                <img src="https://picsum.photos/400/300?random=6" alt="示例图片 6">
+                <div class="gallery-item-info">
+                    <div class="gallery-item-title">示例图片 6</div>
+                    <div class="gallery-item-description">旅行记忆，记录世界各地的精彩瞬间。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <span class="close" onclick="closeLightbox()">&times;</span>
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <img id="lightbox-img" src="" alt="">
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+        </div>
+    </div>
+
+    <script>
+        function openLightbox(element) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            
+            const img = element.querySelector('img');
+            const title = element.querySelector('.gallery-item-title').textContent;
+            
+            lightboxImg.src = img.src;
+            lightboxCaption.textContent = title;
+            lightbox.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            const gallery = document.getElementById('gallery');
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const galleryItem = document.createElement('div');
+                    galleryItem.className = 'gallery-item';
+                    galleryItem.onclick = function() { openLightbox(this); };
+                    
+                    galleryItem.innerHTML = `
+                        <img src="${e.target.result}" alt="${file.name}">
+                        <div class="gallery-item-info">
+                            <div class="gallery-item-title">${file.name}</div>
+                            <div class="gallery-item-description">上传的图片</div>
+                        </div>
+                    `;
+                    
+                    gallery.appendChild(galleryItem);
+                };
+                
+                reader.readAsDataURL(file);
+            }
+            
+            event.target.value = '';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>西游记-人物 - 古典名著图片展示</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">📚 古典名著图片展示</div>
+            <div class="nav-links">
+                <a href="index.html">首页</a>
+                <a href="shuihu.html">水浒传</a>
+                <a href="xiyou.html">西游记</a>
+                <a href="xiyou-renwu.html" class="active">人物</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="category-header">
+            <h1>西游记 - 人物</h1>
+            <p class="category-intro">西游记中的主要人物，包括唐僧师徒四人及其他重要角色</p>
+            <div class="category-meta">
+                <span id="totalCharacters">👥 人物：0个</span>
+                <span id="totalImages">🎨 图片：0张</span>
+            </div>
+        </header>
+
+        <div class="gallery" id="gallery">
+        </div>
+
+        <div class="back-section">
+            <a href="xiyou.html" class="back-btn">← 返回西游记</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 古典名著图片展示 | 基于 GitHub Pages 托管</p>
+    </footer>
+
+    <script src="config.js"></script>
+    <script>
+        function loadCharacters() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+
+            let totalImages = 0;
+
+            xiyouConfig.characters.forEach(character => {
+                totalImages += character.images.length;
+
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                galleryItem.onclick = function() {
+                    window.location.href = 'character.html?book=xiyou&name=' + encodeURIComponent(character.name);
+                };
+
+                const coverImage = character.imagePath + character.cover;
+
+                galleryItem.innerHTML = '<img src="' + coverImage + '" alt="' + character.name + '"><div class="gallery-item-info"><h3>' + character.name + '</h3><p>' + character.title + '</p><p class="image-count">共 ' + character.images.length + ' 张图片</p></div>';
+
+                gallery.appendChild(galleryItem);
+            });
+
+            document.getElementById('totalCharacters').textContent = '👥 人物：' + xiyouConfig.characters.length + '个';
+            document.getElementById('totalImages').textContent = '🎨 图片：' + totalImages + '张';
+        }
+
+        loadCharacters();
+    </script>
+</body>
+</html>

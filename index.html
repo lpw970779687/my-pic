@@ -1,51 +1,94 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="水浒传/西游记静态图片展示页">
-
-    <title>名著人物图鉴 · 水浒传 / 西游记</title>
-
-    <link rel="stylesheet" href="css/style.css" type="text/css">
-    <link rel="icon" href="image/placeholder.svg">
-    <script src="js/main.js" defer></script>
+    <title>古典名著图片展示</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-    <header>
-        <div class="site-title">
-            <div class="site-title__main">名著人物图鉴</div>
-            <div class="site-title__sub">水浒传 / 西游记 · 静态展示 · 点击卡片查看大图</div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">📚 古典名著图片展示</div>
+            <div class="nav-links">
+                <a href="index.html" class="active">首页</a>
+                <a href="shuihu.html">水浒传</a>
+                <a href="xiyou.html">西游记</a>
+            </div>
         </div>
+    </nav>
 
-        <div class="toolbar">
-            <div class="toolbar__filters" role="tablist" aria-label="作品选择">
-                <button class="filter-btn" data-filter="shuihu">水浒传</button>
-                <button class="filter-btn" data-filter="xiyou">西游记</button>
+    <div class="container">
+        <header class="hero">
+            <h1>中国古典名著图片展示</h1>
+            <p class="subtitle">探索四大名著的精彩世界</p>
+        </header>
+
+        <div class="categories">
+            <div class="category-card" onclick="window.location.href='shuihu.html'">
+                <div class="category-image">
+                    <img src="images/水浒传/水浒传.jpg" alt="水浒传">
+                </div>
+                <div class="category-info">
+                    <h2>水浒传</h2>
+                    <p class="category-desc">一百零八位好汉的传奇故事，展现了梁山泊的英雄豪情。</p>
+                    <div class="category-stats">
+                        <span>📖 章回：120回</span>
+                        <span>👥 人物：108将</span>
+                    </div>
+                    <button class="view-btn">查看图片 →</button>
+                </div>
             </div>
 
-            <div class="toolbar__search">
-                <input id="search" type="search" placeholder="搜索：姓名 / 绰号（例如：宋江、孙悟空）" autocomplete="off" />
-                <button id="clear-search" type="button" class="ghost-btn">清空</button>
+            <div class="category-card" onclick="window.location.href='xiyou.html'">
+                <div class="category-image">
+                    <img src="images/西游记/西游记.jpg" alt="西游记">
+                </div>
+                <div class="category-info">
+                    <h2>西游记</h2>
+                    <p class="category-desc">师徒四人西天取经的奇幻旅程，充满神话色彩与冒险精神。</p>
+                    <div class="category-stats">
+                        <span>📖 章回：100回</span>
+                        <span>👥 人物：师徒四人</span>
+                    </div>
+                    <button class="view-btn">查看图片 →</button>
+                </div>
+            </div>
+
+            <div class="category-card coming-soon">
+                <div class="category-image">
+                    <img src="https://picsum.photos/600/400?random=12" alt="红楼梦">
+                </div>
+                <div class="category-info">
+                    <h2>红楼梦 <span class="badge">即将推出</span></h2>
+                    <p class="category-desc">贾宝玉与林黛玉的爱情悲剧，展现了封建社会的兴衰。</p>
+                    <div class="category-stats">
+                        <span>📖 章回：120回</span>
+                        <span>👥 人物：众多</span>
+                    </div>
+                    <button class="view-btn disabled">敬请期待</button>
+                </div>
+            </div>
+
+            <div class="category-card coming-soon">
+                <div class="category-image">
+                    <img src="https://picsum.photos/600/400?random=13" alt="三国演义">
+                </div>
+                <div class="category-info">
+                    <h2>三国演义 <span class="badge">即将推出</span></h2>
+                    <p class="category-desc">魏蜀吴三国的争霸历史，展现了英雄辈出的时代。</p>
+                    <div class="category-stats">
+                        <span>📖 章回：120回</span>
+                        <span>👥 人物：众多</span>
+                    </div>
+                    <button class="view-btn disabled">敬请期待</button>
+                </div>
             </div>
         </div>
-    </header>
-    
-    <main>
-        <div id="gallery" class="image-gallery">
-            <p class="hint">加载中...</p>
-        </div>
-    </main>
-    
-    <footer>
-        <div class="footer-inner">
-            <div class="footer-note">
-                图片路径约定：按 <code>image</code> 下作品目录区分，例如 <code>image/水浒传/宋江/001-宋江-1.jpg</code>、<code>image/西游记/孙悟空/孙悟空-1.jpg</code>。
-            </div>
-            <div class="footer-copy">© 2026 名著人物图鉴（静态页）</div>
-        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2024 古典名著图片展示 | 基于 GitHub Pages 托管</p>
     </footer>
 </body>
 </html>
