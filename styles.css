@@ -94,7 +94,7 @@ body {
 }
 
 .wechat-btn {
-    display: flex;
+    display: none;
     align-items: center;
     gap: 8px;
     background: rgba(255, 255, 255, 0.1);
@@ -1053,52 +1053,6 @@ body {
     display: block;
 }
 
-.vip-banner {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    padding: 20px;
-    margin-bottom: 25px;
-    border-radius: var(--border-radius);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    box-shadow: var(--shadow-md);
-}
-
-.vip-info {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    color: var(--text-white);
-}
-
-.vip-label {
-    font-size: 1.1em;
-    font-weight: 600;
-}
-
-.vip-expiry {
-    color: #ffd700;
-    font-weight: 600;
-}
-
-.vip-upgrade {
-    padding: 12px 28px;
-    background: linear-gradient(135deg, #ffd700, #ffaa00);
-    color: #1a1a2e;
-    border: none;
-    border-radius: 25px;
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.vip-upgrade:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-}
 
 .material-tag {
     position: absolute;
@@ -1253,11 +1207,6 @@ body {
         top: 20px;
         right: 30px;
         font-size: 40px;
-    }
-    
-    .vip-banner {
-        flex-direction: column;
-        text-align: center;
     }
     
     .download-btns {
