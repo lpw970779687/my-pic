@@ -6,15 +6,6 @@
         <div class="logo-text">{{ site.site_name }}</div>
       </a>
     </div>
-
-    {% unless page.hide_search %}
-      <div class="header-search">
-        <div class="header-search-box">
-          <input type="text" placeholder="{{ page.search_placeholder | default: '搜索素材...' }}">
-          <button type="button">搜索</button>
-        </div>
-      </div>
-    {% endunless %}
   </div>
 </div>
 
