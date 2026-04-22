@@ -241,49 +241,6 @@ body {
     background: rgba(255, 107, 53, 0.08);
 }
 
-.filter-section {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    padding: 20px 0;
-    margin-bottom: 30px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-sm);
-}
-
-.filter-content {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.filter-label {
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-right: 10px;
-}
-
-.filter-btn {
-    padding: 10px 22px;
-    border: 2px solid #e0e0e0;
-    background: white;
-    border-radius: 25px;
-    font-size: 0.95em;
-    cursor: pointer;
-    transition: var(--transition);
-    color: var(--text-secondary);
-}
-
-.filter-btn:hover, .filter-btn.active {
-    border-color: var(--primary);
-    background: rgba(255, 107, 53, 0.1);
-    color: var(--primary);
-    font-weight: 600;
-}
-
 .hero {
     text-align: center;
     padding: 60px 20px;
@@ -598,53 +555,6 @@ body {
     padding: 6px 14px;
     background: rgba(255, 107, 53, 0.1);
     border-radius: 20px;
-}
-
-.download-section {
-    padding: 25px;
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    border-top: 1px solid #dee2e6;
-}
-
-.download-btns {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.download-btn {
-    flex: 1;
-    min-width: 120px;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 0.95em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    text-align: center;
-    text-decoration: none;
-}
-
-.download-btn-primary {
-    background: linear-gradient(135deg, var(--primary), #ff8c42);
-    color: white;
-}
-
-.download-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
-}
-
-.download-btn-secondary {
-    background: white;
-    color: var(--text-primary);
-    border: 2px solid #dee2e6;
-}
-
-.download-btn-secondary:hover {
-    border-color: var(--primary);
-    color: var(--primary);
 }
 
 .back-section {
@@ -1208,10 +1118,6 @@ body {
         right: 30px;
         font-size: 40px;
     }
-    
-    .download-btns {
-        flex-direction: column;
-    }
 }
 
 @media (max-width: 480px) {
@@ -1238,15 +1144,6 @@ body {
     
     .search-box button {
         padding: 15px 30px;
-    }
-    
-    .filter-content {
-        gap: 10px;
-    }
-    
-    .filter-btn {
-        padding: 8px 16px;
-        font-size: 0.85em;
     }
     
     .category-info h2 {
