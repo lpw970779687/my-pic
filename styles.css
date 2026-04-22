@@ -93,70 +93,6 @@ body {
     color: var(--primary);
 }
 
-.wechat-btn {
-    display: none;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 8px 18px;
-    border-radius: 25px;
-    color: var(--text-white);
-    cursor: pointer;
-    transition: var(--transition);
-    font-size: 0.95em;
-}
-
-.wechat-btn:hover {
-    background: rgba(255, 107, 53, 0.2);
-    border-color: var(--primary);
-}
-
-.wechat-btn img {
-    width: 20px;
-    height: 20px;
-}
-
-.user-section {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.login-btn, .register-btn {
-    padding: 10px 25px;
-    border-radius: 25px;
-    font-size: 0.95em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-    text-decoration: none;
-    display: inline-block;
-}
-
-.login-btn {
-    background: transparent;
-    border: 2px solid var(--text-white);
-    color: var(--text-white);
-}
-
-.login-btn:hover {
-    background: var(--text-white);
-    color: #1a1a2e;
-}
-
-.register-btn {
-    background: linear-gradient(135deg, var(--primary), #ff8c42);
-    border: none;
-    color: white;
-    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
-}
-
-.register-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
-}
-
 .search-section {
     background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
     padding: 30px 0;
@@ -1027,13 +963,7 @@ body {
         flex-wrap: wrap;
         gap: 15px;
     }
-    
-    .user-section {
-        order: -1;
-        width: 100%;
-        justify-content: center;
-    }
-    
+
     .categories, .gallery, .subcategories {
         grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     }
