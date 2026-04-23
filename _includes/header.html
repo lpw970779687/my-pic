@@ -1,43 +1,63 @@
-<div class="top-bar">
-  <div class="top-bar-content">
-    <div class="logo-section">
-      <a href="{{ 'index.html' | relative_url }}" class="logo">
-        <div class="logo-icon">SD</div>
-        <div class="logo-text">{{ site.site_name }}</div>
-      </a>
+<header class="site-header">
+  <div class="top-bar">
+    <div class="top-bar-content">
+      <div class="brand-group">
+        <a href="{{ 'index.html' | relative_url }}" class="logo">
+          <div class="logo-icon">SD</div>
+          <div class="logo-copy">
+            <div class="logo-text">{{ site.site_name }}</div>
+            <div class="logo-subtext">古典名著素材中心</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="header-meta">
+        <span class="meta-pill">原创整理</span>
+        <span class="meta-pill">高清图集</span>
+        <span class="meta-pill">持续更新</span>
+      </div>
     </div>
   </div>
-</div>
 
-{% if page.nav %}
-  <div class="nav-menu">
-    <div class="nav-menu-content">
-      {% if page.nav == 'main' %}
-        <a href="{{ 'index.html' | relative_url }}" class="nav-item {% if page.nav_active == 'home' %}active{% endif %}">首页</a>
-        <a href="{{ 'shuihu.html' | relative_url }}" class="nav-item {% if page.nav_active == 'shuihu' %}active{% endif %}">水浒传</a>
-        <a href="{{ 'xiyou.html' | relative_url }}" class="nav-item {% if page.nav_active == 'xiyou' %}active{% endif %}">西游记</a>
-      {% endif %}
+  {% if page.nav %}
+    <div class="nav-menu">
+      <div class="nav-menu-content">
+        <nav class="nav-links" aria-label="主导航">
+          {% if page.nav == 'main' %}
+            <a href="{{ 'index.html' | relative_url }}" class="nav-item {% if page.nav_active == 'home' %}active{% endif %}">素材中心</a>
+            <a href="{{ 'shuihu.html' | relative_url }}" class="nav-item {% if page.nav_active == 'shuihu' %}active{% endif %}">水浒传</a>
+            <a href="{{ 'xiyou.html' | relative_url }}" class="nav-item {% if page.nav_active == 'xiyou' %}active{% endif %}">西游记</a>
+          {% endif %}
 
-      {% if page.nav == 'shuihu' %}
-        <a href="{{ 'index.html' | relative_url }}" class="nav-item">首页</a>
-        <a href="{{ 'shuihu.html' | relative_url }}" class="nav-item {% if page.nav_active == 'shuihu' %}active{% endif %}">水浒传</a>
-        <a href="{{ 'shuihu-renwu.html' | relative_url }}" class="nav-item {% if page.nav_active == 'shuihu-renwu' %}active{% endif %}">人物</a>
-        <a href="{{ 'shuihu-changjing.html' | relative_url }}" class="nav-item {% if page.nav_active == 'shuihu-changjing' %}active{% endif %}">场景</a>
-        <a href="{{ 'shuihu-wupin.html' | relative_url }}" class="nav-item {% if page.nav_active == 'shuihu-wupin' %}active{% endif %}">物品</a>
-        <a href="{{ 'shuihu-qingjie.html' | relative_url }}" class="nav-item {% if page.nav_active == 'shuihu-qingjie' %}active{% endif %}">情节</a>
-      {% endif %}
+          {% if page.nav == 'shuihu' %}
+            <a href="{{ 'index.html' | relative_url }}" class="nav-item">素材中心</a>
+            <a href="{{ 'shuihu.html' | relative_url }}" class="nav-item {% if page.nav_active == 'shuihu' %}active{% endif %}">水浒传</a>
+            <a href="{{ 'shuihu-renwu.html' | relative_url }}" class="nav-item {% if page.nav_active == 'shuihu-renwu' %}active{% endif %}">人物</a>
+            <a href="{{ 'shuihu-changjing.html' | relative_url }}" class="nav-item {% if page.nav_active == 'shuihu-changjing' %}active{% endif %}">场景</a>
+            <a href="{{ 'shuihu-wupin.html' | relative_url }}" class="nav-item {% if page.nav_active == 'shuihu-wupin' %}active{% endif %}">物品</a>
+            <a href="{{ 'shuihu-qingjie.html' | relative_url }}" class="nav-item {% if page.nav_active == 'shuihu-qingjie' %}active{% endif %}">情节</a>
+          {% endif %}
 
-      {% if page.nav == 'xiyou' %}
-        <a href="{{ 'index.html' | relative_url }}" class="nav-item">首页</a>
-        <a href="{{ 'xiyou.html' | relative_url }}" class="nav-item {% if page.nav_active == 'xiyou' %}active{% endif %}">西游记</a>
-        <a href="{{ 'xiyou-renwu.html' | relative_url }}" class="nav-item {% if page.nav_active == 'xiyou-renwu' %}active{% endif %}">人物</a>
-      {% endif %}
+          {% if page.nav == 'xiyou' %}
+            <a href="{{ 'index.html' | relative_url }}" class="nav-item">素材中心</a>
+            <a href="{{ 'xiyou.html' | relative_url }}" class="nav-item {% if page.nav_active == 'xiyou' %}active{% endif %}">西游记</a>
+            <a href="{{ 'xiyou-renwu.html' | relative_url }}" class="nav-item {% if page.nav_active == 'xiyou-renwu' %}active{% endif %}">人物</a>
+            <a href="{{ 'xiyou-changjing.html' | relative_url }}" class="nav-item {% if page.nav_active == 'xiyou-changjing' %}active{% endif %}">场景</a>
+            <a href="{{ 'xiyou-shenxian.html' | relative_url }}" class="nav-item {% if page.nav_active == 'xiyou-shenxian' %}active{% endif %}">神仙</a>
+            <a href="{{ 'xiyou-qingjie.html' | relative_url }}" class="nav-item {% if page.nav_active == 'xiyou-qingjie' %}active{% endif %}">情节</a>
+          {% endif %}
 
-      {% if page.nav == 'character' %}
-        <a href="{{ 'index.html' | relative_url }}" class="nav-item">首页</a>
-        <a href="{{ 'shuihu.html' | relative_url }}" class="nav-item">水浒传</a>
-        <a href="{{ 'xiyou.html' | relative_url }}" class="nav-item">西游记</a>
-      {% endif %}
+          {% if page.nav == 'character' %}
+            <a href="{{ 'index.html' | relative_url }}" class="nav-item">素材中心</a>
+            <a href="{{ 'shuihu.html' | relative_url }}" class="nav-item">水浒传</a>
+            <a href="{{ 'xiyou.html' | relative_url }}" class="nav-item">西游记</a>
+          {% endif %}
+        </nav>
+
+        <div class="nav-actions">
+          <span class="nav-search">名著插画 / 人物 / 场景</span>
+        </div>
+      </div>
     </div>
-  </div>
-{% endif %}
+  {% endif %}
+</header>

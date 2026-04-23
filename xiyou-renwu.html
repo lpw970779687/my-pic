@@ -4,23 +4,31 @@ title: 西游记人物
 nav: xiyou
 nav_active: xiyou-renwu
 ---
-    <div class="container">
-        <header class="category-header">
-            <h1>西游记 - 人物</h1>
-            <p class="category-intro">西游记中的主要人物，包括唐僧师徒四人及其他重要角色</p>
-            <div class="category-meta">
-                <span id="totalCharacters">👥 人物：0个</span>
-                <span id="totalImages">🎨 图片：0张</span>
-            </div>
-        </header>
-
-        <div class="gallery" id="gallery">
-        </div>
-
-        <div class="back-section">
-            <a href="xiyou.html" class="back-btn">← 返回西游记</a>
-        </div>
+<div class="container">
+  <header class="category-header">
+    <div class="hero-label">人物图集</div>
+    <h1>西游记 - 人物</h1>
+    <p class="category-intro">西游记中的主要人物，包括唐僧师徒四人及其他重要角色</p>
+    <div class="category-meta">
+      <span id="totalCharacters">👥 人物：0个</span>
+      <span id="totalImages">🎨 图片：0张</span>
     </div>
+  </header>
+
+  <div class="section-head">
+    <div>
+      <p class="section-kicker">人物列表</p>
+      <h2>按角色浏览素材</h2>
+    </div>
+    <div class="section-note">当前仅已接入存在图片资源的角色，详情页保留素材站式大图展示。</div>
+  </div>
+
+  <div class="gallery" id="gallery"></div>
+
+  <div class="back-section">
+    <a href="xiyou.html" class="back-btn">← 返回西游记</a>
+  </div>
+</div>
 
 <script src="config.js"></script>
 <script>
@@ -42,17 +50,19 @@ nav_active: xiyou-renwu
       const coverImage = character.imagePath + character.cover;
 
       galleryItem.innerHTML =
-        '<img src="' +
+        '<div class="material-card-image"><img src="' +
         coverImage +
         '" alt="' +
         character.name +
-        '"><div class="gallery-item-info"><h3>' +
+        '"></div><div class="gallery-item-info"><div class="card-topline"><span class="badge badge-orange">人物图集</span><span class="card-code">ROLE</span></div><h3>' +
         character.name +
-        '</h3><p>' +
+        '</h3><p class="material-subtitle">' +
         character.title +
-        '</p><p class="image-count">共 ' +
+        '</p><p>' +
+        character.description +
+        '</p><div class="material-card-meta"><span class="image-count">共 ' +
         character.images.length +
-        ' 张图片</p></div>';
+        ' 张图片</span><span class="material-link">查看详情</span></div></div>';
 
       gallery.appendChild(galleryItem);
     });
