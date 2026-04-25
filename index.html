@@ -379,7 +379,7 @@
         return;
       }
 
-      const mainMediaContainer = document.getElementById('mainImage').parentElement;
+      const mainMediaContainer = document.querySelector('.main-image');
       const allMedia = [...(currentCharacter.images || []), ...(currentCharacter.videos || [])];
       const mediaItem = allMedia[index];
       

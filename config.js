@@ -33,7 +33,7 @@ const shuihuConfig = {
                 "002-卢俊义-6-gmin.jpg",
                 "002-卢俊义-7-gmin.jpg"
             ],
-            videos: ["卢俊义.mp4"]
+            videos: []
         }
     ]
 };
