@@ -15,7 +15,8 @@ const shuihuConfig = {
                 "001-宋江-6-豆包.jpg",
                 "001-宋江-7-gmini.jpg",
                 "001-宋江-8-gmini.jpg"
-            ]
+            ],
+            videos: ["宋江.mp4"]
         },
         {
             name: "卢俊义",
@@ -31,7 +32,8 @@ const shuihuConfig = {
                 "002-卢俊义-5-豆包.jpg",
                 "002-卢俊义-6-gmin.jpg",
                 "002-卢俊义-7-gmin.jpg"
-            ]
+            ],
+            videos: ["卢俊义.mp4"]
         }
     ]
 };
@@ -48,7 +50,8 @@ const xiyouConfig = {
                 "001-唐三藏-1.jpg",
                 "001-唐三藏-2-豆包.jpg",
                 "001-唐三藏-3-wukong.jpg"
-            ]
+            ],
+            videos: []
         },
         {
             name: "孙悟空",
@@ -60,7 +63,8 @@ const xiyouConfig = {
                 "001-孙悟空-1.jpg",
                 "001-孙悟空-2-豆包.jpg",
                 "001-孙悟空-3-wukong.jpg"
-            ]
+            ],
+            videos: []
         },
     ]
 };
