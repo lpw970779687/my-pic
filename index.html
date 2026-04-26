@@ -45,29 +45,14 @@
 
   <main class="container stack-sections" id="top">
     <section class="page-section">
-      <div class="section-head">
-        <div>
-          <h2 id="categoryTitle">水浒传分类</h2>
-        </div>
-        <div class="section-note" id="categoryNote"></div>
-      </div>
-
       <div class="filter-panel subnav-panel">
         <div class="filter-row">
-          <span class="filter-title">栏目</span>
           <div class="filter-tags" id="secondaryNav"></div>
         </div>
       </div>
     </section>
 
     <section class="page-section">
-      <div class="section-head">
-        <div>
-          <p class="section-kicker" id="contentKicker">人物图集</p>
-          <h2 id="contentTitle">水浒传人物</h2>
-        </div>
-        <div class="section-note" id="contentNote">点击人物卡片可在当前页面展开详情。</div>
-      </div>
       <div class="gallery gallery-paged" id="contentGrid"></div>
       <div class="pagination" id="pagination"></div>
       <div class="placeholder-panel is-hidden" id="contentPlaceholder"></div>
@@ -79,33 +64,21 @@
       <button class="character-modal-close" type="button" onclick="closeCharacterModal()">&times;</button>
       <div class="character-main">
         <div class="main-image">
-          <img id="mainImage" src="" alt="">
+          <div class="main-media-slot" id="mainMediaSlot">
+            <img id="mainImage" src="" alt="">
+          </div>
+          <div class="image-counter">
+            <span id="statCurrentImage">1 / 1</span>
+          </div>
         </div>
         <div class="character-info material-detail-info">
           <div class="detail-badge-row">
-            <span class="badge badge-orange">人物素材</span>
             <span class="card-code" id="detailCode">ROLE</span>
           </div>
-          <h2 id="characterTitle">人物称号</h2>
-          <p id="characterDescription">人物描述</p>
-          <div class="detail-meta-grid">
-            <div class="stat-item">
-              <span class="stat-label">人物名称</span>
-              <span id="detailName">-</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">所属书目</span>
-              <span id="statBook">-</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">图片数</span>
-              <span id="statImageCount">0</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">当前页</span>
-              <span id="statCurrentImage">1 / 1</span>
-            </div>
-          </div>
+          <h2>姓名：<span id="detailName">-</span></h2>
+          <h3>外号：<span id="characterTitle">人物称号</span></h3>
+          <p><strong>人物描述：</strong><span id="characterDescription">人物描述</span></p>
+          <p><strong>人物小传：</strong><span id="characterBiography">人物小传</span></p>
         </div>
       </div>
       <div class="image-navigator character-modal-nav">
@@ -193,8 +166,6 @@
 
     function renderSecondaryNav() {
       const book = BOOKS[state.currentBook];
-      document.getElementById('categoryTitle').textContent = book.label + '分类';
-      document.getElementById('categoryNote').textContent = book.note;
       document.getElementById('headerStatus').textContent = book.label + ' / ' + state.currentCategory;
 
       document.querySelectorAll('#primaryNav .nav-item').forEach(item => {
@@ -226,10 +197,9 @@
           html:
             '<div class="material-card-image"><img src="' + coverImage + '" alt="' + character.name + '"></div>' +
             '<div class="gallery-item-info">' +
-            '<div class="card-topline"><span class="badge badge-orange">人物图集</span><span class="card-code">' + book.code + '</span></div>' +
+            '<div class="card-topline"><span class="card-code">' + book.code + '</span></div>' +
             '<h3>' + character.name + '</h3>' +
             '<p class="material-subtitle">' + character.title + '</p>' +
-            '<p>' + character.description + '</p>' +
             '<div class="material-card-meta"><span class="image-count">共 ' + totalMedia + ' 个媒体</span><span class="material-link">查看详情</span></div>' +
             '</div>',
           onClick: function() {
@@ -335,24 +305,15 @@
       placeholder.classList.add('is-hidden');
 
       if (state.currentCategory === '人物') {
-        document.getElementById('contentKicker').textContent = '人物图集';
-        document.getElementById('contentTitle').textContent = book.label + '人物';
-        document.getElementById('contentNote').textContent = '固定网格展示，每页最多 20 个，点击人物卡片后以弹层方式查看图片与详情。';
         renderCharacters(book);
         return;
       }
 
       if (state.currentCategory === '场景') {
-        document.getElementById('contentKicker').textContent = '场景展示';
-        document.getElementById('contentTitle').textContent = book.label + '场景';
-        document.getElementById('contentNote').textContent = '固定网格展示，每页最多 20 个，点击图片可放大查看。';
         renderStaticCards(book.scenes, '场景');
         return;
       }
 
-      document.getElementById('contentKicker').textContent = '情节展示';
-      document.getElementById('contentTitle').textContent = book.label + '情节';
-      document.getElementById('contentNote').textContent = '固定网格展示，每页最多 20 个，点击图片可放大查看。';
       renderStaticCards(book.plots, '情节');
     }
 
@@ -365,10 +326,17 @@
       document.getElementById('detailCode').textContent = book.code + '-' + character.name;
       document.getElementById('characterTitle').textContent = character.title;
       document.getElementById('characterDescription').textContent = character.description;
+      document.getElementById('characterBiography').textContent = character.biography || '';
       document.getElementById('detailName').textContent = character.name;
-      document.getElementById('statBook').textContent = book.label;
       const totalMedia = (character.images ? character.images.length : 0) + (character.videos ? character.videos.length : 0);
-      document.getElementById('statImageCount').textContent = totalMedia + ' 个';
+      const statBook = document.getElementById('statBook');
+      const statImageCount = document.getElementById('statImageCount');
+      if (statBook) {
+        statBook.textContent = book.label;
+      }
+      if (statImageCount) {
+        statImageCount.textContent = totalMedia + ' 个';
+      }
 
       loadMainMedia(0);
       loadNavMedia();
@@ -379,7 +347,7 @@
         return;
       }
 
-      const mainMediaContainer = document.querySelector('.main-image');
+      const mainMediaContainer = document.getElementById('mainMediaSlot');
       const allMedia = [...(currentCharacter.images || []), ...(currentCharacter.videos || [])];
       const mediaItem = allMedia[index];
       
